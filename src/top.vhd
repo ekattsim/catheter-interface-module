@@ -2,18 +2,19 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity arty_a7_top is
+entity basys_top is
     port (
         clk : in std_logic;
 
         sw   : in std_logic_vector(15 downto 0);
         btnC : in std_logic;
 
-        JA : out std_logic_vector(7 downto 0)
+        JA : out std_logic_vector(7 downto 0);
+        led : out std_logic_vector(15 downto 0)
     );
-end entity arty_a7_top;
+end entity basys_top;
 
-architecture rtl of arty_a7_top is
+architecture rtl of basys_top is
 
     signal rst_meta : std_logic := '0';
     signal rst_sync : std_logic := '0';
@@ -26,6 +27,9 @@ architecture rtl of arty_a7_top is
     signal tx3_i : std_logic;
 
 begin
+
+    led(0) <= '1';
+    led(15 downto 1) <= (others => '0');
 
     -- Simple 2-FF synchronizers.
     -- btn(0) is used as active-high synchronous reset.
