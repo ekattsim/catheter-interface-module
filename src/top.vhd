@@ -8,6 +8,7 @@ entity basys_top is
 
         sw   : in std_logic_vector(15 downto 0);
         btnC : in std_logic;
+		btnR : in std_logic;
 
         JA : out std_logic_vector(7 downto 0);
         led : out std_logic_vector(15 downto 0)
@@ -16,11 +17,12 @@ end entity basys_top;
 
 architecture rtl of basys_top is
 
-    signal rst_meta : std_logic := '0';
-    signal rst_sync : std_logic := '0';
-
     signal sw_meta : std_logic := '0';
     signal sw_sync : std_logic := '0';
+	
+	signal reset : std_logic;
+	
+	signal nextFiring : std_logic;
 
     signal tx1_i : std_logic;
     signal tx2_i : std_logic;
@@ -30,16 +32,34 @@ begin
 
     led(0) <= '1';
     led(15 downto 1) <= (others => '0');
+	
+	RESET_DEBOUNCER: entity work.ButtonDebouncer
+		generic map (
+			STABLE_PERIOD => 10
+		)
+		port map (
+			reset => '1',
+			clock => clk,
+			asyncButton => btnC,
+			cleanButton => reset
+		);
+	
+	NEXT_FIRING_DEBOUNCER: entity work.ButtonDebouncer
+		generic map (
+			STABLE_PERIOD => 10
+		)
+		port map (
+			reset => reset,
+			clock => clk,
+			asyncButton => btnR,
+			cleanButton => nextFiring
+		);
 
     -- Simple 2-FF synchronizers.
-    -- btn(0) is used as active-high synchronous reset.
     -- sw(0) is used as active-high run switch.
     SYNC_INPUTS : process(clk)
     begin
         if rising_edge(clk) then
-            rst_meta <= btnC;
-            rst_sync <= rst_meta;
-
             sw_meta <= sw(0);
             sw_sync <= sw_meta;
         end if;
@@ -53,8 +73,9 @@ begin
         )
         port map (
             clk       => clk,
-            rst       => rst_sync,
+            rst       => reset,
             switch_on => sw_sync,
+			next_firing => nextFiring,
 
             tx1 => tx1_i,
             tx2 => tx2_i,

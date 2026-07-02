@@ -13,6 +13,7 @@ entity tx_core is
 
         -- assumed synchronized before entering tx_core
         switch_on : in std_logic;
+		next_firing : in std_logic;
 
         tx1 : out std_logic;
         tx2 : out std_logic;
@@ -21,6 +22,8 @@ entity tx_core is
 end entity tx_core;
 
 architecture rtl of tx_core is
+	
+	signal nextFiringPulse : std_logic;
 
     signal mode_sel : std_logic_vector(1 downto 0);
 
@@ -35,12 +38,22 @@ architecture rtl of tx_core is
     signal image_done : std_logic;
 
 begin
+	
+	PULSE_NEXT_FIRING: entity work.ButtonPulser
+		port map (
+			reset => rst,
+			clock => clk,
+			syncedButton => next_firing,
+
+			buttonPulse => nextFiringPulse
+		);
 
     u_controller : entity work.tx_controller
         port map (
             clk       => clk,
             rst       => rst,
             switch_on => switch_on,
+			next_firing => nextFiringPulse,
 
             prog_done  => prog_done,
             image_done => image_done,

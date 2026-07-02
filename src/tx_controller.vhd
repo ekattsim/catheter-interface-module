@@ -8,6 +8,7 @@ entity tx_controller is
         rst : in std_logic;
 
         switch_on : in std_logic;
+		next_firing : in std_logic;
 
         prog_done  : in std_logic;
         image_done : in std_logic;
@@ -103,7 +104,11 @@ begin
                     image_active <= '1';
 
                     if image_done = '1' then
-                        next_state <= S_ADVANCE_ELEMENT;
+						if next_firing = '1' then
+							next_state <= S_ADVANCE_ELEMENT;
+						else
+							next_state <= S_PROG_START;
+						end if;
                     else
                         next_state <= S_IMAGE_RUN;
                     end if;
