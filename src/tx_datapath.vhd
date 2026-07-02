@@ -44,9 +44,8 @@ architecture rtl of tx_datapath is
     -- 16.9 us = 1690 cycles @ 100 MHz
 	constant IMAGE_CYCLES : positive := integer(ceil(16.9e-6 * real(SYS_CLK_HZ)));
 
-    constant IMAGE_PULSE_OFFSET_CYCLES : natural := IMAGE_CYCLES / 2;
-    -- constant IMAGE_PULSE_OFFSET_CYCLES : natural := 20;
-    constant IMAGE_PULSE_WIDTH_CYCLES  : natural := 50;
+    constant IMAGE_PULSE_OFFSET_CYCLES : natural := 2;
+    constant IMAGE_PULSE_WIDTH_CYCLES  : positive := integer(ceil(12.5e-9 * real(SYS_CLK_HZ)));
 
     subtype word_t is std_logic_vector(WORD_WIDTH - 1 downto 0);
 
