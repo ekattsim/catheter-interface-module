@@ -38,7 +38,7 @@ begin
 			STABLE_PERIOD => 10
 		)
 		port map (
-			reset => '1',
+			reset => '0',
 			clock => clk,
 			asyncButton => btnC,
 			cleanButton => reset
